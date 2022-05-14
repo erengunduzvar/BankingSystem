@@ -10,23 +10,22 @@ public class Main {
         System.out.println("Program Calisiyor !!");
 
 
-        try{
-            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/jdbc-video","root","19691964");
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("select * from people p,jobs j where j.PeopleId = p.id");
+//        try{
+//            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/projectdatabase","root","19691964");
+//            Statement statement = connection.createStatement();
+//            ResultSet resultSet = statement.executeQuery("select * from user");
+//
+//            while (resultSet.next())
+//            {
+//                System.out.print(resultSet.getString("nameUser"));
+//            }
+//
+//           // System.out.println("Holy Fuck Morty We Did !");
+//        }catch (Exception e)
+//        {
+//            System.out.println(e);
+//        }
 
-            while (resultSet.next())
-            {
-                System.out.print(resultSet.getString("firstname") + ": ");
-                System.out.print(resultSet.getString("JobName") + "\n");
-            }
-
-
-            System.out.println("Holy Fuck Morty We Did !");
-        }catch (Exception e)
-        {
-            System.out.println(e);
-        }
 
 
             Gui Screen = new Gui();

@@ -8,7 +8,7 @@ public class AdminLogin extends JFrame{
 
     public AdminLogin() {
         add(Panel);
-        setSize(400,400);
+        setSize(600,600);
         setLocationRelativeTo(null);//ekrana ortalar
         setResizable(false);
         setTitle("Admin Arayüzü");

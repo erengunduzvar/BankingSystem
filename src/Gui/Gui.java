@@ -1,7 +1,12 @@
 package Gui;
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 public class Gui extends JFrame {
     private JTextField isimTextField;
@@ -11,6 +16,7 @@ public class Gui extends JFrame {
     private JLabel ErrorText;
     private JButton adminLoginButton;
     private JButton userLoginButton;
+    private JLabel BankName;
     int adminKey;
 
 
@@ -19,8 +25,9 @@ public class Gui extends JFrame {
     {
         add(Panel);
         setResizable(false);
-        setSize(400,400);
+        setSize(600,600);
         setTitle("Test Program");
+        BankName.setIcon(new ImageIcon("img/bank.png"));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         ErrorText.setVisible(false);
         setTitle("Bank Managment System");
@@ -30,48 +37,70 @@ public class Gui extends JFrame {
         sendButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String ad,kartno;
-                ad = isimTextField.getText();
-                kartno = kartNumarasıTextField.getText();
+                String userId,tcNo;
+                userId = isimTextField.getText();
+                tcNo = kartNumarasıTextField.getText();
 
                 ErrorText.setVisible(false);
 
-                if(ad.length() < 1) // Error Check
+                if(userId.length() < 1) // Error Check
                 {
-                    ErrorText.setText("İsim alanı boş bırakılamaz !!");
+                    ErrorText.setText("User Id alanı boş bırakılamaz !!");
                     ErrorText.setVisible(true);
                 }
 
-                else if(kartno.length() < 1) // Error Check
+                else if(tcNo.length() < 1) // Error Check
                 {
-                    ErrorText.setText("Kart Numarası alanı boş bırakılamaz");
+                    ErrorText.setText("Tc No alanı boş bırakılamaz");
                     ErrorText.setVisible(true);
                 }
 
                 else
                 {
-                    System.out.println("Login olmaya calisan kullanicinin adi : " + ad + "\nKart Numarasi : " + kartno);
-                    adminKey = Integer.parseInt(String.valueOf(kartno.charAt(0)));
-                    if(adminKey == 0)
+                    try{
+                        Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/projectdatabase","root","19691964");
+                        Statement statement = connection.createStatement();
+                        ResultSet resultSet = statement.executeQuery("select * from user u,account a where a.userId = u.idUser");
+
+                        while (resultSet.next())
+                        {
+                            //Tl hesabi var mi ?
+                            if(userId.equals(resultSet.getString("idUser")) && tcNo.equals(resultSet.getString("tcNoUser")) && "0".equals(resultSet.getString("currencyId")))
+                            {
+                                int authLevel = Integer.parseInt(resultSet.getString("authorizationUser"));
+
+                                System.out.println("Kisi Bulundu");
+                                setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+                                switch (authLevel)
+                                {
+                                    case 0: //user
+                                        new UserLogin(Integer.parseInt(userId),0);
+                                        break;
+                                    case 1: //Employee
+                                        //employee Gui
+                                        break;
+                                    case 2: //Manager
+                                        new AdminLogin();
+
+                                }
+
+
+
+
+                            }
+                            else
+                            {
+                                ErrorText.setText("Girilen bilgilere uygun bir hesap bulunamadı");
+                                ErrorText.setVisible(true);
+                            }
+                        }
+
+                        // System.out.println("Holy Fuck Morty We Did !");
+                    }catch (Exception exception)
                     {
-                        System.out.println("Admin girisi tespit edildi !");
-                        setVisible(false);
-                        new AdminLogin();
-
-
+                        System.out.println(exception);
                     }
 
-                    else if(adminKey < 3)
-                    {
-                        System.out.println("Kullanici girisi tespit edildi.");
-                    }
-
-                    else
-                    {
-                        ErrorText.setText("Giris Bilgileri Yanlis");
-                        System.out.println("Hatali giris");
-                        ErrorText.setVisible(true);
-                    }
                 }
 
 
@@ -84,6 +113,13 @@ public class Gui extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 setVisible(false);
                 new AdminLogin();
+            }
+        });
+        userLoginButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setVisible(false);
+                new UserLogin(0,0);
             }
         });
     }
